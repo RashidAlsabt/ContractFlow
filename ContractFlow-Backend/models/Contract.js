@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose')
 
 const contractSchema = new mongoose.Schema(
   {
@@ -18,4 +18,4 @@ const contractSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Contract', contractSchema);
+module.exports = mongoose.model('Contract', contractSchema)

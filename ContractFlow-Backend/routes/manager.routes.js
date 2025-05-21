@@ -1,18 +1,16 @@
 const express = require('express')
 const router = express.Router()
+const controller = require('../controllers/manager.controller')
+const validate = require('../middleware/validate')
+const rules = require('../validators/manager.validation')
 
-const handleValidation = require('../middleware/validate')
-const managerRules = require('../validators/manager.validation')
-const {
-  createManager,
-  getManagers,
-  updateManager,
-  deleteManager
-} = require('../controllers/manager.controller')
-
-router.post('/', managerRules, handleValidation, createManager)
-router.get('/', getManagers)
-router.put('/:id', managerRules, handleValidation, updateManager)
-router.delete('/:id', deleteManager)
+// list managers
+router.get('/', controller.list)
+// get one
+router.get('/:id', controller.getOne)
+// update
+router.put('/:id', rules, validate, controller.update)
+// delete
+router.delete('/:id', controller.remove)
 
 module.exports = router

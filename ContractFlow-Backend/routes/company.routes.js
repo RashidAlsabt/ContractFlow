@@ -1,18 +1,18 @@
 const express = require('express')
 const router = express.Router()
+const controller = require('../controllers/company.controller')
+const validate = require('../middleware/validate')
+const rules = require('../validators/company.validation')
 
-const handleValidation = require('../middleware/validate')
-const companyRules = require('../validators/company.validation')
-const {
-  createCompany,
-  getCompanies,
-  updateCompany,
-  deleteCompany
-} = require('../controllers/company.controller')
-
-router.post('/', companyRules, handleValidation, createCompany)
-router.get('/', getCompanies)
-router.put('/:id', companyRules, handleValidation, updateCompany)
-router.delete('/:id', deleteCompany)
+// list
+router.get('/', controller.list)
+// get one
+router.get('/:id', controller.getOne)
+// create
+router.post('/', rules, validate, controller.create)
+// update
+router.put('/:id', rules, validate, controller.update)
+// delete
+router.delete('/:id', controller.remove)
 
 module.exports = router

@@ -1,19 +1,12 @@
 const { body } = require('express-validator')
 
-const companyRules = [
-  body('name')
-    .notEmpty()
-    .withMessage('name is required'),
-
-  body('email')
+const rules = [
+  body('name').notEmpty().withMessage('Name required'),
+  body('email').optional().isEmail().withMessage('Invalid email'),
+  body('phonenumber')
     .optional()
-    .isEmail()
-    .withMessage('not a valid email'),
-
-  body('phoneNumber')
-    .optional()
-    .matches(/^\d{7,15}$/)
-    .withMessage('phone should be 7 to 15 digits')
+    .isMobilePhone()
+    .withMessage('Invalid phone')
 ]
 
-module.exports = companyRules
+module.exports = rules

@@ -1,95 +1,40 @@
-const express = require("express")
+const express = require('express')
 const router = express.Router()
-const Company = require("../models/Company")
-const jwt = require("jsonwebtoken")
-const verifyToken = require("../middleware/verify-token")
-const bcrypt = require("bcrypt")
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const Manager = require('../models/Manager')
 
-// register company
-router.post("/register", async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
-    const { company_name, email, password, salary } = req.body
+    const { email, password, departmentName } = req.body
+    const existing = await Manager.findOne({ email })
+    if (existing) return res.status(400).json({ error: 'Email already exists' })
 
-    const foundCompany = await Company.findOne({ email })
-    if (foundCompany) {
-      return res.status(400).json({ err: "Email already registered" })
-    }
+    const hashed = await bcrypt.hash(password, 10)
+    const newManager = await Manager.create({ email, password: hashed, departmentName })
 
-    const hashedPassword = bcrypt.hashSync(password, 12)
+    res.status(201).json({ message: 'Signup success' })
+  } catch (err) {
+    res.status(500).json({ error: 'Signup failed', details: err.message })
+  }
+})
 
-    const createdCompany = await Company.create({
-      company_name,
-      email,
-      password: hashedPassword,
-      salary,
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const manager = await Manager.findOne({ email }).select('+password')
+    if (!manager) return res.status(401).json({ error: 'Invalid credentials' })
+
+    const match = await bcrypt.compare(password, manager.password)
+    if (!match) return res.status(401).json({ error: 'Invalid credentials' })
+
+    const token = jwt.sign({ id: manager._id, email: manager.email }, process.env.JWT_SECRET, {
+      expiresIn: '1d'
     })
 
-    const companyData = createdCompany.toObject()
-    delete companyData.password
-
-    res.status(201).json(companyData)
-  } catch (error) {
-    res.status(500).json({ err: "Something went wrong" })
-  }
-})
-
-// login company
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body
-
-  try {
-    const foundCompany = await Company.findOne({ email })
-    if (!foundCompany) {
-      return res.status(401).json({ err: "Email not registered" })
-    }
-
-    if (!foundCompany.password) {
-      return res.status(500).json({ err: "No password found for this user" })
-    }
-
-    const isMatch = bcrypt.compareSync(password, foundCompany.password)
-    if (!isMatch) {
-      return res.status(401).json({ err: "Email or password incorrect" })
-    }
-
-    const payload = foundCompany.toObject()
-    delete payload.password
-
-    const token = jwt.sign({ payload }, process.env.JWT_SECRET)
-
-    res.status(200).json({ token })
-  } catch (error) {
-    res.status(500).json({ err: "Internal server error" })
-  }
-})
-
-// verify token
-router.get("/verify", verifyToken, (req, res) => {
-  res.json(req.user)
-})
-
-// update company name
-router.put("/update-name", verifyToken, async (req, res) => {
-  try {
-    const updated = await Company.findByIdAndUpdate(
-      req.user._id,
-      req.body,
-      { new: true }
-    ).select("-password")
-
-    res.status(200).json(updated)
-  } catch (error) {
-    res.status(500).json({ err: "Failed to update name" })
-  }
-})
-
-// delete account
-router.delete("/delete-account", verifyToken, async (req, res) => {
-  try {
-    await Company.findByIdAndDelete(req.user._id)
-    res.status(200).json({ msg: "Account deleted" })
-  } catch (error) {
-    res.status(500).json({ err: "Failed to delete account" })
+    res.json({ token })
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed', details: err.message })
   }
 })
 

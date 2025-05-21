@@ -32,12 +32,10 @@ app.use(logger('dev'))
 
 
 
-app.use('/auth', authRoutes);
-app.use('/contracts', contractRoutes);
-app.use('/managers', managerRoutes)
-app.use('/companies', companyRoutes)
-
-
+app.use('/auth', authRoutes)
+app.use('/contracts', verifyToken, contractRoutes)
+app.use('/managers', verifyToken, managerRoutes)
+app.use('/companies', verifyToken, companyRoutes)
 
 // start the Server
 app.listen(3000, () => {

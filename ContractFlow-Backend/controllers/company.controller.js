@@ -1,58 +1,26 @@
 const Company = require('../models/Company')
 
-const createCompany = async (req, res) => {
-  try {
-    const company = await Company.create(req.body)
-    res.status(201).json(company)
-  } catch (err) {
-    res.status(500).json({ error: 'could not create company', details: err.message })
-  }
+exports.list = async (req, res) => {
+  const all = await Company.find()
+  res.json(all)
 }
 
-const getCompanies = async (req, res) => {
-  try {
-    const companies = await Company.find()
-    res.json(companies)
-  } catch (err) {
-    res.status(500).json({ error: 'could not fetch companies' })
-  }
+exports.getOne = async (req, res) => {
+  const one = await Company.findById(req.params.id)
+  res.json(one)
 }
 
-const updateCompany = async (req, res) => {
-  try {
-    const updated = await Company.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    )
-
-    if (!updated) {
-      return res.status(404).json({ error: 'Company not found' })
-    }
-
-    res.json(updated)
-  } catch (err) {
-    res.status(500).json({ error: 'could not update company', details: err.message })
-  }
+exports.create = async (req, res) => {
+  const saved = await Company.create(req.body)
+  res.status(201).json(saved)
 }
 
-const deleteCompany = async (req, res) => {
-  try {
-    const deleted = await Company.findByIdAndDelete(req.params.id)
-
-    if (!deleted) {
-      return res.status(404).json({ error: 'Company not found' })
-    }
-
-    res.json({ message: 'Company deleted successfully' })
-  } catch (err) {
-    res.status(500).json({ error: 'could not delete company', details: err.message })
-  }
+exports.update = async (req, res) => {
+  const updated = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  res.json(updated)
 }
 
-module.exports = {
-  createCompany,
-  getCompanies,
-  updateCompany,
-  deleteCompany
+exports.remove = async (req, res) => {
+  await Company.findByIdAndDelete(req.params.id)
+  res.status(204).end()
 }
