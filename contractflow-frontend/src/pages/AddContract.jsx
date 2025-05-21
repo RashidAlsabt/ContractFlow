@@ -8,6 +8,7 @@ function AddContract() {
     counterparty: '',
     owner: '',
     value: '',
+    currency: 'USD',
     status: 'draft'
   })
 
@@ -19,29 +20,89 @@ function AddContract() {
 
   const handleSubmit = e => {
     e.preventDefault()
-    axios.post(`${import.meta.env.VITE_API_URL}/contracts`, form)
-      .then(() => navigate('/'))
-      .catch(err => console.log('create error', err))
+    axios.post('/contracts', form)
+      .then(() => navigate('/contracts'))
+      .catch(() => alert('Error creating contract'))
   }
 
   return (
-    <div>
-      <h2>New Contract</h2>
-      <form onSubmit={handleSubmit}>
-        <input name='title' placeholder='Title' onChange={handleChange} required />
-        <input name='counterparty' placeholder='Counterparty' onChange={handleChange} required />
-        <input name='owner' placeholder='Owner' onChange={handleChange} required />
-        <input name='value' type='number' placeholder='Value' onChange={handleChange} />
-        <select name='status' onChange={handleChange}>
-          <option value='draft'>draft</option>
-          <option value='in-review'>in-review</option>
-          <option value='signed'>signed</option>
-          <option value='expired'>expired</option>
+    <div style={container}>
+      <h2 style={heading}>Add New Contract</h2>
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <label style={label}>Title</label>
+        <input name='title' onChange={handleChange} style={input} required />
+
+        <label style={label}>Counterparty</label>
+        <input name='counterparty' onChange={handleChange} style={input} required />
+
+        <label style={label}>Owner</label>
+        <input name='owner' onChange={handleChange} style={input} required />
+
+        <label style={label}>Value</label>
+        <input name='value' type='number' onChange={handleChange} style={input} />
+
+        <label style={label}>Currency</label>
+        <select name='currency' onChange={handleChange} style={input}>
+          <option value='USD'>USD</option>
+          <option value='BHD'>BHD</option>
+          <option value='EUR'>EUR</option>
         </select>
-        <button type='submit'>Create</button>
+
+        <label style={label}>Status</label>
+        <select name='status' onChange={handleChange} style={input}>
+          <option value='draft'>Draft</option>
+          <option value='in-review'>In Review</option>
+          <option value='signed'>Signed</option>
+          <option value='expired'>Expired</option>
+        </select>
+
+        <button type='submit' style={button}>Create</button>
       </form>
     </div>
   )
+}
+
+const container = {
+  maxWidth: '600px',
+  margin: '40px auto',
+  padding: '30px',
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  background: '#fff',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+}
+
+const heading = {
+  textAlign: 'center',
+  marginBottom: '20px'
+}
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px'
+}
+
+const label = {
+  fontWeight: 'bold'
+}
+
+const input = {
+  padding: '10px',
+  fontSize: '16px',
+  borderRadius: '4px',
+  border: '1px solid #ccc'
+}
+
+const button = {
+  marginTop: '20px',
+  padding: '10px',
+  fontSize: '16px',
+  backgroundColor: '#28a745',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer'
 }
 
 export default AddContract

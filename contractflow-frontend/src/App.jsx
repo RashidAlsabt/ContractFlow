@@ -15,6 +15,8 @@ import EditCompany from './pages/EditCompany'
 
 import ManagerList from './pages/ManagerList'
 import EditManager from './pages/EditManager'
+import Register from './pages/Register'
+
 
 function App() {
   const { token } = useContext(AuthContext)
@@ -23,9 +25,12 @@ function App() {
     <BrowserRouter>
       {!token ? (
         <Routes>
-          <Route path='/*' element={<Auth />} />
+          <Route path="/" element={<Auth />} />
+          <Route path="/auth/register" element={<Register />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       ) : (
+
         <>
           <NavBar />
           <Routes>

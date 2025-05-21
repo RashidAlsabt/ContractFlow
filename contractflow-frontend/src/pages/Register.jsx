@@ -1,13 +1,11 @@
-import { useState, useContext } from 'react'
+import { useState } from 'react'
 import axios from '../api/axios'
-import { AuthContext } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
-function Auth() {
-  const { login } = useContext(AuthContext)
+function Register() {
   const navigate = useNavigate()
 
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '', departmentName: '' })
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -15,27 +13,35 @@ function Auth() {
 
   const handleSubmit = e => {
     e.preventDefault()
-    axios.post('/auth/login', form)
-      .then(res => {
-        login(res.data.token)
+    axios.post('/auth/signup', form)
+      .then(() => {
+        alert('Registration successful!')
         navigate('/')
       })
-      .catch(() => alert('Login failed'))
-  }
-
-  const goToRegister = () => {
-    navigate('/auth/register') // or however you handle it
+      .catch(() => alert('Registration failed'))
   }
 
   return (
     <div style={container}>
-      <h2 style={heading}>Login</h2>
+      <h2 style={heading}>Register</h2>
       <form onSubmit={handleSubmit} style={form}>
+        <div style={formGroup}>
+          <label style={label}>Department Name</label>
+          <input
+            name='departmentName'
+            value={form.departmentName}
+            onChange={handleChange}
+            required
+            style={input}
+          />
+        </div>
+
         <div style={formGroup}>
           <label style={label}>Email</label>
           <input
             name='email'
             type='email'
+            value={form.email}
             onChange={handleChange}
             required
             style={input}
@@ -47,18 +53,19 @@ function Auth() {
           <input
             name='password'
             type='password'
+            value={form.password}
             onChange={handleChange}
             required
             style={input}
           />
         </div>
 
-        <button type='submit' style={button}>Login</button>
+        <button type='submit' style={button}>Register</button>
       </form>
 
       <p style={linkText}>
-        Don’t have an account?
-        <button onClick={goToRegister} style={linkButton}>Register</button>
+        Already have an account?
+        <button onClick={() => navigate('/')} style={linkButton}>Login</button>
       </p>
     </div>
   )
@@ -105,7 +112,7 @@ const input = {
 const button = {
   padding: '10px',
   fontSize: '16px',
-  backgroundColor: '#007bff',
+  backgroundColor: '#28a745',
   color: '#fff',
   border: 'none',
   borderRadius: '4px',
@@ -127,4 +134,4 @@ const linkButton = {
   fontSize: '15px'
 }
 
-export default Auth
+export default Register

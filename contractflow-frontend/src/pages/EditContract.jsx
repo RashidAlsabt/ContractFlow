@@ -9,28 +9,16 @@ function EditContract() {
   const [form, setForm] = useState({
     title: '',
     counterparty: '',
+    owner: '',
     value: '',
-    status: ''
+    currency: 'USD',
+    status: 'draft'
   })
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    console.log('Fetching contract with ID:', id)
-    console.log('Token being sent:', token)
-
-    axios.get(`/contracts/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => {
-        console.log('Fetched contract:', res.data)
-        setForm(res.data)
-      })
-      .catch(err => {
-        console.error('Error response:', err.response)
-        alert('Error loading contract')
-      })
+    axios.get(`/contracts/${id}`)
+      .then(res => setForm(res.data))
+      .catch(() => alert('Error loading contract'))
   }, [id])
 
   const handleChange = e => {
@@ -39,56 +27,124 @@ function EditContract() {
 
   const handleSubmit = e => {
     e.preventDefault()
-    const token = localStorage.getItem('token')
-
-    axios.put(`/contracts/${id}`, form, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    axios.put(`/contracts/${id}`, form)
       .then(() => navigate('/contracts'))
-      .catch(err => {
-        console.error('Error updating contract:', err.response)
-        alert('Update failed')
-      })
+      .catch(() => alert('Update failed'))
   }
 
   return (
-    <div>
-      <h2>Edit Contract</h2>
-      <form onSubmit={handleSubmit}>
+    <div style={container}>
+      <h2 style={heading}>Edit Contract</h2>
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <label style={label}>Title</label>
         <input
           name='title'
-          placeholder='Title'
           value={form.title}
           onChange={handleChange}
           required
+          style={input}
         />
+
+        <label style={label}>Counterparty</label>
         <input
           name='counterparty'
-          placeholder='Counterparty'
           value={form.counterparty}
           onChange={handleChange}
+          required
+          style={input}
         />
+
+        <label style={label}>Owner</label>
+        <input
+          name='owner'
+          value={form.owner}
+          onChange={handleChange}
+          required
+          style={input}
+        />
+
+        <label style={label}>Value</label>
         <input
           name='value'
-          placeholder='Value'
+          type='number'
           value={form.value}
           onChange={handleChange}
+          style={input}
         />
-        <select name='status' value={form.status} onChange={handleChange} required>
-        <option value=''>-- Select Status --</option>
-        <option value='draft'>Draft</option>
-        <option value='in-review'>In Review</option>
-        <option value='signed'>Signed</option>
-        <option value='expired'>Expired</option>
-          </select>
 
+        <label style={label}>Currency</label>
+        <select
+          name='currency'
+          value={form.currency}
+          onChange={handleChange}
+          style={input}
+        >
+          <option value='USD'>USD</option>
+          <option value='BHD'>BHD</option>
+          <option value='EUR'>EUR</option>
+        </select>
 
-        <button type='submit'>Save</button>
+        <label style={label}>Status</label>
+        <select
+          name='status'
+          value={form.status}
+          onChange={handleChange}
+          required
+          style={input}
+        >
+          <option value='draft'>Draft</option>
+          <option value='in-review'>In Review</option>
+          <option value='signed'>Signed</option>
+          <option value='expired'>Expired</option>
+        </select>
+
+        <button type='submit' style={button}>Save</button>
       </form>
     </div>
   )
+}
+
+const container = {
+  maxWidth: '600px',
+  margin: '40px auto',
+  padding: '30px',
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+  background: '#fff'
+}
+
+const heading = {
+  textAlign: 'center',
+  marginBottom: '20px'
+}
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px'
+}
+
+const label = {
+  fontWeight: 'bold'
+}
+
+const input = {
+  padding: '10px',
+  fontSize: '16px',
+  borderRadius: '4px',
+  border: '1px solid #ccc'
+}
+
+const button = {
+  marginTop: '20px',
+  padding: '10px',
+  fontSize: '16px',
+  backgroundColor: '#007bff',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer'
 }
 
 export default EditContract
