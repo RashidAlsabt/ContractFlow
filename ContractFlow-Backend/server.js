@@ -38,6 +38,8 @@ app.use('/managers', verifyToken, managerRoutes)
 app.use('/companies', verifyToken, companyRoutes)
 
 // start the Server
-app.listen(3000, () => {
-  console.log('The express app is read')
-})
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
