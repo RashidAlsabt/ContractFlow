@@ -8,10 +8,11 @@ const contractSchema = new mongoose.Schema(
     value: { type: Number, min: 0 },
     currency: { type: String, default: 'USD' },
     status: {
-      type: String,
-      enum: ['draft', 'in‑review', 'signed', 'expired'],
-      default: 'draft',
-    },
+    type: String,
+    enum: ['draft', 'in-review', 'signed', 'expired'],
+    default: 'draft'
+}
+,
     startDate: Date,
     endDate: Date,
   },

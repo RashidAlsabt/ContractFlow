@@ -20,6 +20,8 @@ const getContracts = async (req, res) => {
 
 // UPDATE Contract
 const updateContract = async (req, res) => {
+  console.log('Incoming update payload:', req.body)
+
   try {
     const updated = await Contract.findByIdAndUpdate(
       req.params.id,
@@ -33,9 +35,11 @@ const updateContract = async (req, res) => {
 
     res.json(updated)
   } catch (err) {
+    console.error('Update error:', err)
     res.status(500).json({ error: 'could not update contract', details: err.message })
   }
 }
+
 
 //DELETE contract
 const deleteContract = async (req, res) => {
@@ -51,6 +55,19 @@ const deleteContract = async (req, res) => {
     res.status(500).json({ error: 'could not delete contract', details: err.message })
   }
 }
+const getOneContract = async (req, res) => {
+  try {
+    const contract = await Contract.findById(req.params.id)
+
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found' })
+    }
+
+    res.json(contract)
+  } catch (err) {
+    res.status(500).json({ error: 'could not fetch contract', details: err.message })
+  }
+}
 
 
 
@@ -58,5 +75,6 @@ module.exports = {
   createContract,
   getContracts,
   updateContract,
-  deleteContract
+  deleteContract,
+  getOneContract
 }
